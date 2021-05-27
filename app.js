@@ -47,7 +47,7 @@ app.post("/api/users", jsonParser, function (request, response){
 
     const userName = request.body.name;
     const userAge = request.body.age;
-    let user = {name: userName, age: userAge};
+    let user = {name: userName, age: userAge, id: null};
 
     let data = fs.readFileSync(filePath, "utf8");
     let users = JSON.parse(data);
@@ -72,16 +72,18 @@ app.delete("/api/users/:id", function (request, response){
     let users = JSON.parse(data);
     let index = -1;
 
-    for (var i=0; i< users.length; i++){
-        if(users[i].id == id){
+    for (var i=0; i < users.length; i++)
+    {
+        if(users[i].id == id)
+        {
             index = i;
             break;
         }
     }
-    if (index > -1)
+    if (index !== -1)
     {
         let user = users[index];
-        users = users.splice(index, 1);
+        users.splice(index, 1);
         data = JSON.stringify(users);
         fs.writeFileSync(filePath, data);
         response.send(user);
@@ -101,25 +103,25 @@ app.put("/api/users", jsonParser, function (request, response){
     const userAge = request.body.age;
 
     let data = fs.readFileSync(filePath, "utf8");
-    const users = JSON.parse(data);
-    let user = null;
+    let users = JSON.parse(data);
+    let index = -1;
 
     for (var i=0; i<users.length; i++)
     {
         if (users[i].id == userId)
         {
-            user = users[i];
+            index = i;
             break;
         }
     }
 
-    if (user)
+    if (index !== -1)
     {
-        user.age = userAge;
-        user.name = userName;
+        users[index].age = userAge;
+        users[index].name = userName;
         data = JSON.stringify(users);
         fs.writeFileSync(filePath, data);
-        response.send(user);
+        response.send(users[index]);
     }
     else {
         response.sendStatus(404);
